@@ -134,7 +134,7 @@ const styles = {
     left: 0,
     right: 0,
     margin: '0 auto',
-    top: '10%',
+    top: '18%',
     width: 'min(86%, 60vh)',
     aspectRatio: '1 / 1',
     backgroundImage: "url('/white%20cloud.png')",
@@ -151,7 +151,7 @@ const styles = {
     left: 0,
     right: 0,
     margin: '0 auto',
-    top: '16%',
+    top: '26%',
     width: 'min(72%, 50vh)',
     aspectRatio: '1 / 1',
     backgroundImage: "url('/white%20cloud.png')",
@@ -244,7 +244,7 @@ const FrescoScene = () => {
     sceneRef,
     {
       scrollTrigger: {
-        end: '+=680%',
+        end: '+=770%',
       },
       build: (tl) => {
         const q = gsap.utils.selector(sceneRef)
@@ -302,33 +302,38 @@ const FrescoScene = () => {
 
           // "One dad." glides down and tucks in behind the clouds
           .set(q('.one-dad'), { opacity: 1, y: -320 }, 5.5)
-          .to(q('.one-dad'), { y: -150, duration: 2.0, ease: 'sine.inOut' }, 5.5)
+          .to(q('.one-dad'), { y: -45, duration: 2.0, ease: 'sine.inOut' }, 5.5)
 
           // Hidden behind the clouds where they meet, the text swaps to
-          // "One tiny legend." — which then drifts out from underneath
-          .to(q('.one-dad'), { opacity: 0, y: -150, duration: 0.45, ease: 'power2.inOut' }, 7.5)
-          .fromTo(q('.one-legend'), { opacity: 0, y: -150, scale: 0.98 }, { opacity: 1, y: 120, scale: 1, duration: 1.0, ease: 'power2.inOut' }, 7.5)
+          // "One tiny legend." — which then slowly emerges from underneath
+          .to(q('.one-dad'), { opacity: 0, y: -45, duration: 0.45, ease: 'power2.inOut' }, 7.5)
+          .fromTo(q('.one-legend'), { opacity: 0, y: -45, scale: 0.98 }, { opacity: 1, y: 160, scale: 1, duration: 2.2, ease: 'power1.inOut' }, 7.5)
 
-          // Both clouds sweep out at the same time, opposite directions
-          .to(q('.cloud'), { x: -560, duration: 1.3, ease: 'power1.in' }, 8.1)
-          .to(q('.cloud2'), { x: 560, duration: 1.3, ease: 'power1.in' }, 8.1)
+          // Two-stage cloud exit — PHASE A: slow cinematic drift toward the
+          // exits while the legend is still emerging from underneath
+          .to(q('.cloud'), { x: -120, duration: 1.3, ease: 'sine.inOut' }, 8.4)
+          .to(q('.cloud2'), { x: 120, duration: 1.3, ease: 'sine.inOut' }, 8.4)
+
+          // PHASE B: legend fully revealed — clouds accelerate into their exit
+          .to(q('.cloud'), { x: -560, duration: 1.3, ease: 'power1.in' }, 9.7)
+          .to(q('.cloud2'), { x: 560, duration: 1.3, ease: 'power1.in' }, 9.7)
 
           // The new text drifts fully down and out of view, staying fully visible
-          .to(q('.one-legend'), { y: 620, duration: 1.4, ease: 'power1.in' }, 8.6);
+          .to(q('.one-legend'), { y: 620, duration: 1.4, ease: 'power1.in' }, 10.3);
 
         // ---- Gallery pullback: the sky was a framed painting all along ----
         if (reducedMotion) {
           // Simplified: cut straight to the final framed state, no zoom
-          tl.set(q('.sky'), { scale: 0.6 }, 10.3)
-          tl.set(q('.frame-wrap'), { opacity: 1, scale: 0.6 }, 10.3)
-          tl.set(q('.gallery-wall'), { opacity: 1, scale: 1 }, 10.3)
+          tl.set(q('.sky'), { scale: 0.6 }, 11.9)
+          tl.set(q('.frame-wrap'), { opacity: 1, scale: 0.6 }, 11.9)
+          tl.set(q('.gallery-wall'), { opacity: 1, scale: 1 }, 11.9)
         } else {
           // Anticipation hold on the full-bleed sky, then the camera pulls back
-          tl.fromTo(q('.gallery-wall'), { opacity: 0, scale: 1.12 }, { opacity: 1, scale: 1, duration: 2.6, ease: 'power1.out' }, 10.3)
-          tl.fromTo(q('.frame-wrap'), { opacity: 0, scale: 1 }, { opacity: 1, scale: 0.6, duration: 2.5, ease: 'power2.inOut' }, 10.3)
-          tl.to(q('.sky'), { scale: 0.6, duration: 2.5, ease: 'power2.inOut' }, 10.3)
+          tl.fromTo(q('.gallery-wall'), { opacity: 0, scale: 1.12 }, { opacity: 1, scale: 1, duration: 2.6, ease: 'power1.out' }, 11.9)
+          tl.fromTo(q('.frame-wrap'), { opacity: 0, scale: 1 }, { opacity: 1, scale: 0.6, duration: 2.5, ease: 'power2.inOut' }, 11.9)
+          tl.to(q('.sky'), { scale: 0.6, duration: 2.5, ease: 'power2.inOut' }, 11.9)
           // Faint spotlight drift sells the camera move; painting settles into the wall
-          tl.to(q('.gallery-wall'), { x: 10, duration: 2.5, ease: 'sine.inOut' }, 10.3)
+          tl.to(q('.gallery-wall'), { x: 10, duration: 2.5, ease: 'sine.inOut' }, 11.9)
         }
       },
     },

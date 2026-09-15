@@ -59,6 +59,7 @@ const KeepScrolling = () => {
           style={{
             fontFamily: "'Cormorant Garamond', Georgia, serif",
             textTransform: 'uppercase',
+            textShadow: '0 1px 8px rgba(0, 0, 0, 0.55)',
           }}
         >
           <textPath href="#ks-path">
