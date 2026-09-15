@@ -1,0 +1,109 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap');
+
+@font-face {
+  font-family: 'Griffith';
+  src: url('/fonts/Griffiths.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@theme {
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100svh;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Mobile-only invitation: on larger screens the site renders as a centered phone frame */
+@media (min-width: 480px) {
+  body {
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    background: radial-gradient(120% 120% at 50% 0%, #292524 0%, #1c1917 60%, #0c0a09 100%);
+  }
+
+  #root {
+    width: 100%;
+    max-width: 420px;
+    min-height: calc(100svh - 3rem);
+    overflow: hidden;
+    border-radius: 2.5rem;
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55);
+    background: #000;
+  }
+}
+
+/* Sparkle — twinkling embers */
+@media (prefers-reduced-motion: no-preference) {
+  .gp {
+    will-change: transform, opacity;
+    animation: sparkle 2.4s ease-in-out infinite;
+  }
+  .gp-1 { animation-delay: 0s; }
+  .gp-2 { animation-delay: 0.7s; }
+  .gp-3 { animation-delay: 1.4s; }
+  .gp-4 { animation-delay: 0.35s; }
+
+  .glow {
+    will-change: transform, opacity;
+    animation: glowBreathe 3s ease-in-out infinite;
+  }
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0.35; transform: translateX(-50%) scale(0.92); }
+  50%      { opacity: 1;   transform: translateX(-50%) scale(1.06); }
+}
+
+@keyframes glowBreathe {
+  0%, 100% { filter: blur(4px); }
+  50%      { filter: blur(6px); }
+}
+
+/* Keep-scrolling ring rotation */
+@keyframes ksSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.ks-ring {
+  animation: ksSpin 14s linear infinite;
+  transform-origin: 50% 50%;
+}
+
+/* Keep-scrolling flickering arrow */
+@keyframes ksFlicker {
+  0%, 100% { opacity: 1; transform: translateY(0); }
+  50%      { opacity: 0.35; transform: translateY(3px); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ks-arrow svg {
+    animation: ksFlicker 1.6s ease-in-out infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gp, .glow, .ks-arrow svg { animation: none; }
+}
