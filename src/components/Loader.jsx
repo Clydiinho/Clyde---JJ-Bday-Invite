@@ -117,7 +117,7 @@ const Loader = ({ onComplete }) => {
           style={{
             fontFamily: "'Cormorant Garamond', Georgia, serif",
             fontStyle: 'italic',
-            fontSize: 'clamp(0.85rem, 2.5vw, 1rem)',
+            fontSize: 'clamp(1rem, 3vw, 1.2rem)',
             color: 'rgba(60,50,40,0.55)',
             letterSpacing: '0.08em',
           }}

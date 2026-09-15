@@ -25,7 +25,7 @@ const KeepScrolling = () => {
       style={{
         position: 'absolute',
         left: '50%',
-        bottom: '1.5rem',
+        bottom: 'max(1.5rem, calc(env(safe-area-inset-bottom, 0px) + 1rem))',
         transform: 'translateX(-50%)',
         width: size + ringPad * 2,
         height: size + ringPad * 2,
@@ -53,9 +53,9 @@ const KeepScrolling = () => {
         </defs>
         <text
           fill="rgba(255,240,220,0.92)"
-          fontSize="19"
+          fontSize="21"
           fontWeight="400"
-          letterSpacing="5.5"
+          letterSpacing="4.5"
           style={{
             fontFamily: "'Cormorant Garamond', Georgia, serif",
             textTransform: 'uppercase',

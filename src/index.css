@@ -28,6 +28,25 @@ body {
   min-height: 100svh;
 }
 
+/* Pinned scene + inner wrap: svh keeps ScrollTrigger measurements stable
+   when mobile browser chrome shows/hides (falls back to vh where unsupported) */
+.fresco-scene {
+  position: relative;
+  height: 100vh;
+  height: 100svh;
+  width: 100%;
+  overflow: hidden;
+  background: #000;
+}
+
+.fresco-wrap {
+  position: relative;
+  height: 100vh;
+  height: 100svh;
+  width: 100%;
+  overflow: hidden;
+}
+
 html {
   scroll-behavior: smooth;
 }

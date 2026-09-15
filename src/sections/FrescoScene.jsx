@@ -15,13 +15,13 @@ const birthday = {
   rsvp: 'call or text 555-0142',
 }
 
+// Frame proportions: identical on desktop/wide screens (clamp caps),
+// slightly refined on narrow phones so the molding never overwhelms.
+const molding = 'clamp(22px, 7.5vw, 30px)'
+const cornerSize = 'clamp(72px, 21vw, 88px)'
+const crestWidth = 'clamp(92px, 28vw, 110px)'
+
 const styles = {
-  wrap: {
-    position: 'relative',
-    height: '100vh',
-    width: '100%',
-    overflow: 'hidden',
-  },
   layer: {
     position: 'absolute',
     inset: 0,
@@ -55,7 +55,7 @@ const styles = {
   },
   wall: {
     position: 'absolute',
-    inset: 0,
+    inset: -12,
     opacity: 0,
     backgroundImage: "url('/gallery-wall.jpg')",
     backgroundSize: 'cover',
@@ -83,9 +83,9 @@ const styles = {
   },
   frameRailH: {
     position: 'absolute',
-    left: 58,
-    right: 58,
-    height: 30,
+    left: `calc(${molding} * 2 - 2px)`,
+    right: `calc(${molding} * 2 - 2px)`,
+    height: molding,
     backgroundImage: "url('/frame-rail-h.png')",
     backgroundRepeat: 'repeat-x',
     backgroundSize: 'auto 100%',
@@ -93,9 +93,9 @@ const styles = {
   },
   frameRailV: {
     position: 'absolute',
-    top: 58,
-    bottom: 58,
-    width: 30,
+    top: `calc(${molding} * 2 - 2px)`,
+    bottom: `calc(${molding} * 2 - 2px)`,
+    width: molding,
     backgroundImage: "url('/frame-rail-v.png')",
     backgroundRepeat: 'repeat-y',
     backgroundSize: '100% auto',
@@ -103,16 +103,16 @@ const styles = {
   },
   frameCorner: {
     position: 'absolute',
-    width: 88,
-    height: 88,
+    width: cornerSize,
+    height: cornerSize,
     mixBlendMode: 'screen',
   },
   frameCrest: {
     position: 'absolute',
     left: '50%',
     transform: 'translateX(-50%)',
-    top: -72,
-    width: 110,
+    top: `calc(${crestWidth} * -0.65)`,
+    width: crestWidth,
     mixBlendMode: 'screen',
     pointerEvents: 'none',
   },
@@ -135,7 +135,7 @@ const styles = {
     right: 0,
     margin: '0 auto',
     top: '10%',
-    width: '86%',
+    width: 'min(86%, 60vh)',
     aspectRatio: '1 / 1',
     backgroundImage: "url('/white%20cloud.png')",
     backgroundSize: 'contain',
@@ -151,8 +151,8 @@ const styles = {
     left: 0,
     right: 0,
     margin: '0 auto',
-    top: '22%',
-    width: '72%',
+    top: '16%',
+    width: 'min(72%, 50vh)',
     aspectRatio: '1 / 1',
     backgroundImage: "url('/white%20cloud.png')",
     backgroundSize: 'contain',
@@ -175,13 +175,13 @@ const styles = {
     fontStyle: 'italic',
     fontWeight: 400,
     color: '#fffaf0',
-    fontSize: 'clamp(1.5rem, 6vw, 2.1rem)',
+    fontSize: 'clamp(1.75rem, 7vw, 2.5rem)',
     lineHeight: 1.2,
     letterSpacing: '0.02em',
     textShadow: '0 3px 22px rgba(60, 70, 95, 0.55), 0 1px 2px rgba(60,70,95,0.4)',
     opacity: 0,
     willChange: 'transform, opacity',
-    zIndex: 2,
+    zIndex: 1,
   },
   oneLegend: {
     position: 'absolute',
@@ -194,13 +194,13 @@ const styles = {
     fontStyle: 'italic',
     fontWeight: 400,
     color: '#fffaf0',
-    fontSize: 'clamp(1.5rem, 6vw, 2.1rem)',
+    fontSize: 'clamp(1.75rem, 7vw, 2.5rem)',
     lineHeight: 1.2,
     letterSpacing: '0.02em',
     textShadow: '0 3px 22px rgba(60, 70, 95, 0.55), 0 1px 2px rgba(60,70,95,0.4)',
     opacity: 0,
     willChange: 'transform, opacity',
-    zIndex: 2,
+    zIndex: 1,
   },
   scrollHint: {
     position: 'absolute',
@@ -227,7 +227,7 @@ const styles = {
     fontStyle: 'italic',
     fontWeight: 400,
     color: '#f6e3b0',
-    fontSize: 'clamp(1.4rem, 5.5vw, 2.1rem)',
+    fontSize: 'clamp(1.65rem, 6.5vw, 2.4rem)',
     lineHeight: 1.25,
     letterSpacing: '0.03em',
     textShadow: '0 2px 24px rgba(0,0,0,0.55), 0 0 1px rgba(0,0,0,0.4)',
@@ -300,20 +300,21 @@ const FrescoScene = () => {
           .fromTo(q('.cloud'), { opacity: 0, x: 520 }, { opacity: 1, x: 0, duration: 1.1, ease: 'power2.inOut' }, 5.5)
           .fromTo(q('.cloud2'), { opacity: 0, x: -520 }, { opacity: 1, x: 0, duration: 1.1, ease: 'power2.inOut' }, 5.5)
 
-          // "One dad." glides down gently, at full opacity, settling under the cloud
+          // "One dad." glides down and tucks in behind the clouds
           .set(q('.one-dad'), { opacity: 1, y: -320 }, 5.5)
-          .to(q('.one-dad'), { y: -68, duration: 2.0, ease: 'sine.inOut' }, 5.5)
+          .to(q('.one-dad'), { y: -150, duration: 2.0, ease: 'sine.inOut' }, 5.5)
 
-          // Once they meet, the text glides into "One tiny legend." — smooth cross-fade
-          .to(q('.one-dad'), { opacity: 0, y: -70, duration: 0.45, ease: 'power2.inOut' }, 7.5)
-          .fromTo(q('.one-legend'), { opacity: 0, y: -46, scale: 0.98 }, { opacity: 1, y: -58, scale: 1, duration: 0.6, ease: 'power2.inOut' }, 7.5)
+          // Hidden behind the clouds where they meet, the text swaps to
+          // "One tiny legend." — which then drifts out from underneath
+          .to(q('.one-dad'), { opacity: 0, y: -150, duration: 0.45, ease: 'power2.inOut' }, 7.5)
+          .fromTo(q('.one-legend'), { opacity: 0, y: -150, scale: 0.98 }, { opacity: 1, y: 120, scale: 1, duration: 1.0, ease: 'power2.inOut' }, 7.5)
 
           // Both clouds sweep out at the same time, opposite directions
           .to(q('.cloud'), { x: -560, duration: 1.3, ease: 'power1.in' }, 8.1)
           .to(q('.cloud2'), { x: 560, duration: 1.3, ease: 'power1.in' }, 8.1)
 
           // The new text drifts fully down and out of view, staying fully visible
-          .to(q('.one-legend'), { y: 620, duration: 1.6, ease: 'power1.in' }, 8.1);
+          .to(q('.one-legend'), { y: 620, duration: 1.4, ease: 'power1.in' }, 8.6);
 
         // ---- Gallery pullback: the sky was a framed painting all along ----
         if (reducedMotion) {
@@ -337,15 +338,9 @@ const FrescoScene = () => {
   return (
     <section
       ref={sceneRef}
-      style={{
-        position: 'relative',
-        height: '100vh',
-        width: '100%',
-        overflow: 'hidden',
-        background: '#000',
-      }}
+      className="fresco-scene"
     >
-      <div style={styles.wrap}>
+      <div className="fresco-wrap">
         {/* Painting background */}
         <div
           className="background"
@@ -355,12 +350,13 @@ const FrescoScene = () => {
           }}
         />
 
-        {/* Father */}
+        {/* Father — reframed so the face stays in view on narrow screens */}
         <div
           className="father"
           style={{
             ...styles.layer,
             backgroundImage: "url('/father.png')",
+            backgroundPosition: '25% 50%',
           }}
         />
 
@@ -392,7 +388,7 @@ const FrescoScene = () => {
           style={{
             position: 'absolute',
             left: '50%',
-            top: '38%',
+            top: '47%',
             transform: 'translate(-50%, -50%)',
             width: '60vmin',
             height: '60vmin',
@@ -420,7 +416,7 @@ const FrescoScene = () => {
             inset: 0,
             opacity: 0,
             pointerEvents: 'none',
-            background: 'radial-gradient(circle at 50% 42%, rgba(255,225,140,0.9) 0%, rgba(255,200,100,0.5) 34%, rgba(255,180,70,0.18) 58%, transparent 80%)',
+            background: 'radial-gradient(circle at 50% 47%, rgba(255,225,140,0.9) 0%, rgba(255,200,100,0.5) 34%, rgba(255,180,70,0.18) 58%, transparent 80%)',
             mixBlendMode: 'screen',
           }}
         />
@@ -451,16 +447,16 @@ const FrescoScene = () => {
 
         {/* Ornate frame — tracks the painting edges as the camera pulls back */}
         <div className="frame-wrap" style={styles.frameWrap}>
-          <div style={{ ...styles.frameRailH, top: -30 }} />
-          <div style={{ ...styles.frameRailH, bottom: -30 }} />
-          <div style={{ ...styles.frameRailV, left: -30 }} />
-          <div style={{ ...styles.frameRailV, right: -30 }} />
+          <div style={{ ...styles.frameRailH, top: `calc(${molding} * -1)` }} />
+          <div style={{ ...styles.frameRailH, bottom: `calc(${molding} * -1)` }} />
+          <div style={{ ...styles.frameRailV, left: `calc(${molding} * -1)` }} />
+          <div style={{ ...styles.frameRailV, right: `calc(${molding} * -1)` }} />
           <div style={styles.frameLiner} />
           <div style={styles.frameEdge} />
-          <img src="/frame-corner.png" alt="" style={{ ...styles.frameCorner, left: -29, top: -29 }} />
-          <img src="/frame-corner.png" alt="" style={{ ...styles.frameCorner, right: -29, top: -29, transform: 'scaleX(-1)' }} />
-          <img src="/frame-corner.png" alt="" style={{ ...styles.frameCorner, left: -29, bottom: -29, transform: 'scaleY(-1)' }} />
-          <img src="/frame-corner.png" alt="" style={{ ...styles.frameCorner, right: -29, bottom: -29, transform: 'scale(-1, -1)' }} />
+          <img src="/frame-corner.png" alt="" style={{ ...styles.frameCorner, left: `calc(${molding} * -1 + 1px)`, top: `calc(${molding} * -1 + 1px)` }} />
+          <img src="/frame-corner.png" alt="" style={{ ...styles.frameCorner, right: `calc(${molding} * -1 + 1px)`, top: `calc(${molding} * -1 + 1px)`, transform: 'scaleX(-1)' }} />
+          <img src="/frame-corner.png" alt="" style={{ ...styles.frameCorner, left: `calc(${molding} * -1 + 1px)`, bottom: `calc(${molding} * -1 + 1px)`, transform: 'scaleY(-1)' }} />
+          <img src="/frame-corner.png" alt="" style={{ ...styles.frameCorner, right: `calc(${molding} * -1 + 1px)`, bottom: `calc(${molding} * -1 + 1px)`, transform: 'scale(-1, -1)' }} />
           <img src="/frame-crest.png" alt="" style={styles.frameCrest} />
         </div>
 
