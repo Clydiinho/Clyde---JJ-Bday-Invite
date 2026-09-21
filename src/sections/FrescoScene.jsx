@@ -15,12 +15,6 @@ const birthday = {
   rsvp: 'call or text 555-0142',
 }
 
-// Frame proportions: identical on desktop/wide screens (clamp caps),
-// slightly refined on narrow phones so the molding never overwhelms.
-const molding = 'clamp(22px, 7.5vw, 30px)'
-const cornerSize = 'clamp(72px, 21vw, 88px)'
-const crestWidth = 'clamp(92px, 28vw, 110px)'
-
 const styles = {
   layer: {
     position: 'absolute',
@@ -53,11 +47,11 @@ const styles = {
     boxShadow: '0 30px 90px rgba(0, 0, 0, 0.65)',
     willChange: 'transform, opacity',
   },
-  wall: {
+  scene2: {
     position: 'absolute',
-    inset: -12,
+    inset: -10,
     opacity: 0,
-    backgroundImage: "url('/gallery-wall.jpg')",
+    backgroundImage: "url('/scene2.jpg')",
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
@@ -65,69 +59,6 @@ const styles = {
     transformOrigin: 'center',
     willChange: 'transform, opacity',
     zIndex: 0,
-  },
-  wallShade: {
-    position: 'absolute',
-    inset: 0,
-    background: 'radial-gradient(90% 70% at 50% 42%, rgba(255, 225, 170, 0.16) 0%, rgba(0, 0, 0, 0.28) 62%, rgba(0, 0, 0, 0.62) 100%)',
-    pointerEvents: 'none',
-  },
-  frameWrap: {
-    position: 'absolute',
-    inset: 0,
-    opacity: 0,
-    pointerEvents: 'none',
-    transformOrigin: 'center',
-    willChange: 'transform, opacity',
-    zIndex: 4,
-  },
-  frameRailH: {
-    position: 'absolute',
-    left: `calc(${molding} * 2 - 2px)`,
-    right: `calc(${molding} * 2 - 2px)`,
-    height: molding,
-    backgroundImage: "url('/frame-rail-h.png')",
-    backgroundRepeat: 'repeat-x',
-    backgroundSize: 'auto 100%',
-    mixBlendMode: 'screen',
-  },
-  frameRailV: {
-    position: 'absolute',
-    top: `calc(${molding} * 2 - 2px)`,
-    bottom: `calc(${molding} * 2 - 2px)`,
-    width: molding,
-    backgroundImage: "url('/frame-rail-v.png')",
-    backgroundRepeat: 'repeat-y',
-    backgroundSize: '100% auto',
-    mixBlendMode: 'screen',
-  },
-  frameCorner: {
-    position: 'absolute',
-    width: cornerSize,
-    height: cornerSize,
-    mixBlendMode: 'screen',
-  },
-  frameCrest: {
-    position: 'absolute',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    top: `calc(${crestWidth} * -0.65)`,
-    width: crestWidth,
-    mixBlendMode: 'screen',
-    pointerEvents: 'none',
-  },
-  frameLiner: {
-    position: 'absolute',
-    inset: -7,
-    border: '2px solid rgba(216, 178, 90, 0.95)',
-    boxShadow: 'inset 0 0 0 1px rgba(90, 60, 20, 0.8)',
-    pointerEvents: 'none',
-  },
-  frameEdge: {
-    position: 'absolute',
-    inset: -33,
-    border: '2px solid rgba(0, 0, 0, 0.55)',
-    pointerEvents: 'none',
   },
   cloudBacking: {
     position: 'absolute',
@@ -270,7 +201,7 @@ const FrescoScene = () => {
     sceneRef,
     {
       scrollTrigger: {
-        end: '+=820%',
+        end: '+=900%',
       },
       build: (tl) => {
         const q = gsap.utils.selector(sceneRef)
@@ -353,19 +284,22 @@ const FrescoScene = () => {
           // The new text drifts fully down and out of view, staying fully visible
           .to(q('.one-legend'), { y: 620, duration: 1.4, ease: 'power1.in' }, 11.0);
 
-        // ---- Gallery pullback: the sky was a framed painting all along ----
+        // ---- scene2 — seamless zoom: interior blue fills the sky, then pulls back ----
         if (reducedMotion) {
-          // Simplified: cut straight to the final framed state, no zoom
-          tl.set(q('.sky'), { scale: 0.6 }, 12.4)
-          tl.set(q('.frame-wrap'), { opacity: 1, scale: 0.6 }, 12.4)
-          tl.set(q('.gallery-wall'), { opacity: 1, scale: 1 }, 12.4)
+          tl.set(q('.sky'), { opacity: 0 }, 12.4)
+          tl.set(q('.scene2'), { opacity: 1, scale: 1, y: '0%' }, 12.4)
         } else {
-          // Anticipation hold on the full-bleed sky, then the camera pulls back
-          tl.fromTo(q('.gallery-wall'), { opacity: 0, scale: 1.12 }, { opacity: 1, scale: 1, duration: 2.6, ease: 'power1.out' }, 12.4)
-          tl.fromTo(q('.frame-wrap'), { opacity: 0, scale: 1 }, { opacity: 1, scale: 0.6, duration: 2.5, ease: 'power2.inOut' }, 12.4)
-          tl.to(q('.sky'), { scale: 0.6, duration: 2.5, ease: 'power2.inOut' }, 12.4)
-          // Faint spotlight drift sells the camera move; painting settles into the wall
-          tl.to(q('.gallery-wall'), { x: 10, duration: 2.5, ease: 'sine.inOut' }, 12.4)
+          // Sky breathes into the match frame, then fades under the plate
+          tl.to(q('.sky'), { scale: 1.02, duration: 0.6, ease: 'sine.inOut' }, 12.4)
+          tl.to(q('.sky'), { opacity: 0, duration: 0.9, ease: 'power1.inOut' }, 12.4)
+          // scene2 starts zoomed to its interior blue (indistinguishable from sky),
+          // then effortless pull-back reveals gilt → plaster → father+baby
+          tl.fromTo(
+            q('.scene2'),
+            { opacity: 0, scale: 2.15, y: '-18%' },
+            { opacity: 1, scale: 1, y: '0%', duration: 5.0, ease: 'power2.out' },
+            12.4
+          )
         }
       },
     },
@@ -464,10 +398,8 @@ const FrescoScene = () => {
           <p className="intro-line-2" style={{ ...styles.introLine, position: 'absolute' }}>There was a creation.</p>
         </div>
 
-        {/* Gallery wall — revealed as the camera pulls back from the painting */}
-        <div className="gallery-wall" style={styles.wall}>
-          <div style={styles.wallShade} />
-        </div>
+        {/* scene2 — complete wall + framed painting (replaces gallery-wall + frame) */}
+        <div className="scene2" style={styles.scene2} />
 
         {/* Sky painting — fills the viewport after the transition */}
         <div className="sky" style={styles.sky} />
@@ -485,21 +417,6 @@ const FrescoScene = () => {
         {/* "One dad." — falls from the top, meets the cloud, then swaps to "One tiny legend." */}
         <p className="one-dad" style={styles.oneDad}>One dad.</p>
         <p className="one-legend" style={styles.oneLegend}>One tiny legend.</p>
-
-        {/* Ornate frame — tracks the painting edges as the camera pulls back */}
-        <div className="frame-wrap" style={styles.frameWrap}>
-          <div style={{ ...styles.frameRailH, top: `calc(${molding} * -1)` }} />
-          <div style={{ ...styles.frameRailH, bottom: `calc(${molding} * -1)` }} />
-          <div style={{ ...styles.frameRailV, left: `calc(${molding} * -1)` }} />
-          <div style={{ ...styles.frameRailV, right: `calc(${molding} * -1)` }} />
-          <div style={styles.frameLiner} />
-          <div style={styles.frameEdge} />
-          <img src="/frame-corner.png" alt="" style={{ ...styles.frameCorner, left: `calc(${molding} * -1 + 1px)`, top: `calc(${molding} * -1 + 1px)` }} />
-          <img src="/frame-corner.png" alt="" style={{ ...styles.frameCorner, right: `calc(${molding} * -1 + 1px)`, top: `calc(${molding} * -1 + 1px)`, transform: 'scaleX(-1)' }} />
-          <img src="/frame-corner.png" alt="" style={{ ...styles.frameCorner, left: `calc(${molding} * -1 + 1px)`, bottom: `calc(${molding} * -1 + 1px)`, transform: 'scaleY(-1)' }} />
-          <img src="/frame-corner.png" alt="" style={{ ...styles.frameCorner, right: `calc(${molding} * -1 + 1px)`, bottom: `calc(${molding} * -1 + 1px)`, transform: 'scale(-1, -1)' }} />
-          <img src="/frame-crest.png" alt="" style={styles.frameCrest} />
-        </div>
 
         {/* Keep-scrolling indicator — circular animation with rotating text */}
         <KeepScrolling />
