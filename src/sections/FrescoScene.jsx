@@ -129,6 +129,32 @@ const styles = {
     border: '2px solid rgba(0, 0, 0, 0.55)',
     pointerEvents: 'none',
   },
+  cloudBacking: {
+    position: 'absolute',
+    left: '8%',
+    right: '8%',
+    top: '31%',
+    height: '18%',
+    background: 'rgba(255,255,255,0.96)',
+    borderRadius: '999px',
+    filter: 'blur(18px)',
+    opacity: 0,
+    willChange: 'transform, opacity',
+    zIndex: 2.1,
+  },
+  cloud2Backing: {
+    position: 'absolute',
+    left: '12%',
+    right: '12%',
+    top: '38%',
+    height: '15%',
+    background: 'rgba(255,255,255,0.92)',
+    borderRadius: '999px',
+    filter: 'blur(16px)',
+    opacity: 0,
+    willChange: 'transform, opacity',
+    zIndex: 1.9,
+  },
   cloud: {
     position: 'absolute',
     left: 0,
@@ -244,7 +270,7 @@ const FrescoScene = () => {
     sceneRef,
     {
       scrollTrigger: {
-        end: '+=770%',
+        end: '+=820%',
       },
       build: (tl) => {
         const q = gsap.utils.selector(sceneRef)
@@ -299,41 +325,47 @@ const FrescoScene = () => {
           // As the sky transitions, both clouds sweep in at the same time
           .fromTo(q('.cloud'), { opacity: 0, x: 520 }, { opacity: 1, x: 0, duration: 1.1, ease: 'power2.inOut' }, 5.5)
           .fromTo(q('.cloud2'), { opacity: 0, x: -520 }, { opacity: 1, x: 0, duration: 1.1, ease: 'power2.inOut' }, 5.5)
+          .fromTo(q('.cloud-backing'), { opacity: 0, x: 520 }, { opacity: 1, x: 0, duration: 1.1, ease: 'power2.inOut' }, 5.5)
+          .fromTo(q('.cloud2-backing'), { opacity: 0, x: -520 }, { opacity: 1, x: 0, duration: 1.1, ease: 'power2.inOut' }, 5.5)
 
-          // "One dad." glides down and tucks in behind the clouds
-          .set(q('.one-dad'), { opacity: 1, y: -320 }, 5.5)
-          .to(q('.one-dad'), { y: -45, duration: 2.0, ease: 'sine.inOut' }, 5.5)
+          // "One dad." glides down slowly and tucks in behind the clouds
+          .set(q('.one-dad'), { opacity: 1, y: -260 }, 5.5)
+          .to(q('.one-dad'), { y: -95, duration: 3.2, ease: 'power1.out' }, 5.5)
 
           // Hidden behind the clouds where they meet, the text swaps to
-          // "One tiny legend." — which then slowly emerges from underneath
-          .to(q('.one-dad'), { opacity: 0, y: -45, duration: 0.45, ease: 'power2.inOut' }, 7.5)
-          .fromTo(q('.one-legend'), { opacity: 0, y: -45, scale: 0.98 }, { opacity: 1, y: 160, scale: 1, duration: 2.2, ease: 'power1.inOut' }, 7.5)
+          // "One tiny legend." — which then slowly peels out from underneath
+          .to(q('.one-dad'), { opacity: 0, y: -95, duration: 0.45, ease: 'power2.inOut' }, 7.5)
+          .fromTo(q('.one-legend'), { opacity: 0, y: -95, scale: 0.98 }, { opacity: 1, y: 40, scale: 1, duration: 2.2, ease: 'sine.inOut' }, 7.5)
+          .to(q('.one-legend'), { y: 160, duration: 1.3, ease: 'sine.inOut' }, 9.0)
 
-          // Two-stage cloud exit — PHASE A: slow cinematic drift toward the
-          // exits while the legend is still emerging from underneath
-          .to(q('.cloud'), { x: -120, duration: 1.3, ease: 'sine.inOut' }, 8.4)
-          .to(q('.cloud2'), { x: 120, duration: 1.3, ease: 'sine.inOut' }, 8.4)
+          // Two-stage cloud exit — PHASE A: slow drift while the legend is still emerging
+          .to(q('.cloud'), { x: -120, duration: 1.3, ease: 'sine.inOut' }, 8.8)
+          .to(q('.cloud2'), { x: 120, duration: 1.3, ease: 'sine.inOut' }, 8.8)
+          .to(q('.cloud-backing'), { x: -120, duration: 1.3, ease: 'sine.inOut' }, 8.8)
+          .to(q('.cloud2-backing'), { x: 120, duration: 1.3, ease: 'sine.inOut' }, 8.8)
 
-          // PHASE B: legend fully revealed — clouds accelerate into their exit
-          .to(q('.cloud'), { x: -560, duration: 1.3, ease: 'power1.in' }, 9.7)
-          .to(q('.cloud2'), { x: 560, duration: 1.3, ease: 'power1.in' }, 9.7)
+          // PHASE B: legend clear — clouds accelerate into their exit
+          .to(q('.cloud'), { x: -560, duration: 1.3, ease: 'power1.in' }, 10.2)
+          .to(q('.cloud2'), { x: 560, duration: 1.3, ease: 'power1.in' }, 10.2)
+          .to(q('.cloud-backing'), { x: -560, duration: 1.3, ease: 'power1.in' }, 10.2)
+          .to(q('.cloud2-backing'), { x: 560, duration: 1.3, ease: 'power1.in' }, 10.2)
 
           // The new text drifts fully down and out of view, staying fully visible
-          .to(q('.one-legend'), { y: 620, duration: 1.4, ease: 'power1.in' }, 10.3);
+          .to(q('.one-legend'), { y: 620, duration: 1.4, ease: 'power1.in' }, 11.0);
 
         // ---- Gallery pullback: the sky was a framed painting all along ----
         if (reducedMotion) {
           // Simplified: cut straight to the final framed state, no zoom
-          tl.set(q('.sky'), { scale: 0.6 }, 11.9)
-          tl.set(q('.frame-wrap'), { opacity: 1, scale: 0.6 }, 11.9)
-          tl.set(q('.gallery-wall'), { opacity: 1, scale: 1 }, 11.9)
+          tl.set(q('.sky'), { scale: 0.6 }, 12.4)
+          tl.set(q('.frame-wrap'), { opacity: 1, scale: 0.6 }, 12.4)
+          tl.set(q('.gallery-wall'), { opacity: 1, scale: 1 }, 12.4)
         } else {
           // Anticipation hold on the full-bleed sky, then the camera pulls back
-          tl.fromTo(q('.gallery-wall'), { opacity: 0, scale: 1.12 }, { opacity: 1, scale: 1, duration: 2.6, ease: 'power1.out' }, 11.9)
-          tl.fromTo(q('.frame-wrap'), { opacity: 0, scale: 1 }, { opacity: 1, scale: 0.6, duration: 2.5, ease: 'power2.inOut' }, 11.9)
-          tl.to(q('.sky'), { scale: 0.6, duration: 2.5, ease: 'power2.inOut' }, 11.9)
+          tl.fromTo(q('.gallery-wall'), { opacity: 0, scale: 1.12 }, { opacity: 1, scale: 1, duration: 2.6, ease: 'power1.out' }, 12.4)
+          tl.fromTo(q('.frame-wrap'), { opacity: 0, scale: 1 }, { opacity: 1, scale: 0.6, duration: 2.5, ease: 'power2.inOut' }, 12.4)
+          tl.to(q('.sky'), { scale: 0.6, duration: 2.5, ease: 'power2.inOut' }, 12.4)
           // Faint spotlight drift sells the camera move; painting settles into the wall
-          tl.to(q('.gallery-wall'), { x: 10, duration: 2.5, ease: 'sine.inOut' }, 11.9)
+          tl.to(q('.gallery-wall'), { x: 10, duration: 2.5, ease: 'sine.inOut' }, 12.4)
         }
       },
     },
@@ -439,6 +471,10 @@ const FrescoScene = () => {
 
         {/* Sky painting — fills the viewport after the transition */}
         <div className="sky" style={styles.sky} />
+
+        {/* Cloud backings — solid ovals that make the text truly hide behind the clouds */}
+        <div className="cloud-backing" style={styles.cloudBacking} />
+        <div className="cloud2-backing" style={styles.cloud2Backing} />
 
         {/* Cloud — flows in from the right once the sky appears */}
         <div className="cloud" style={styles.cloud} />

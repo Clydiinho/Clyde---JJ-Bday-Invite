@@ -18,9 +18,12 @@ export const useScrollScene = (ref, config, deps = []) => {
           trigger: ref.current,
           start: 'top top',
           end: '+=500%',
-          scrub: true,
+          scrub: 1,
           pin: true,
           anticipatePin: 1,
+          pinType: document.querySelector('.fresco-scene') ? 'fixed' : 'transform',
+          invalidateOnRefresh: true,
+          onToggle: (self) => document.documentElement.classList.toggle('is-pinned', self.isActive),
           ...config?.scrollTrigger,
         },
         ...config?.timeline,
@@ -28,7 +31,21 @@ export const useScrollScene = (ref, config, deps = []) => {
       config?.build(tl.current)
     }, ref)
 
-    return () => ctx.revert()
+    let raf = 0
+    const scheduleRefresh = () => {
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(() => ScrollTrigger.refresh())
+    }
+    window.addEventListener('resize', scheduleRefresh)
+    window.visualViewport?.addEventListener('resize', scheduleRefresh)
+
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('resize', scheduleRefresh)
+      window.visualViewport?.removeEventListener('resize', scheduleRefresh)
+      document.documentElement.classList.remove('is-pinned')
+      ctx.revert()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps)
 

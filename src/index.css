@@ -31,18 +31,26 @@ body {
 
 #root {
   min-height: 100svh;
-  min-height: 100dvh;
 }
 
-/* Pinned scene + inner wrap: dvh tracks the mobile toolbar in both states
-   (falls back through svh to vh where unsupported) */
+html {
+  scroll-behavior: smooth;
+}
+
+html.is-pinned {
+  scroll-behavior: auto;
+}
+
+/* Pinned scene + inner wrap: svh is stable while the toolbar hides
+   (falls back to vh where unsupported). dvh is intentionally not used
+   on the trigger — it makes the pin-spacer race the toolbar. */
 .fresco-scene {
   position: relative;
   height: 100vh;
   height: 100svh;
-  height: 100dvh;
   width: 100%;
   overflow: hidden;
+  overflow: clip;
   background: #000;
 }
 
@@ -50,13 +58,9 @@ body {
   position: relative;
   height: 100vh;
   height: 100svh;
-  height: 100dvh;
   width: 100%;
   overflow: hidden;
-}
-
-html {
-  scroll-behavior: smooth;
+  overflow: clip;
 }
 
 /* Mobile-only invitation: on larger screens the site renders as a centered phone frame */
