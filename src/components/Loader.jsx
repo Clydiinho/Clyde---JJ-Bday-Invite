@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-const DURATION = 6000
+const DURATION = 10000
 
 const Loader = ({ onComplete }) => {
   const [progress, setProgress] = useState(0)
@@ -15,6 +15,14 @@ const Loader = ({ onComplete }) => {
       const elapsed = now - startRef.current
       const t = Math.min(elapsed / DURATION, 1)
       setProgress(t)
+      const v = videoRef.current
+      if (v && v.duration) {
+        const target = t * v.duration
+        if (Math.abs(v.currentTime - target) > 0.05) v.currentTime = target
+      } else if (v) {
+        const target = t * 10.084
+        if (Math.abs(v.currentTime - target) > 0.05) v.currentTime = target
+      }
       if (t < 1) {
         rafRef.current = requestAnimationFrame(tick)
       } else {
@@ -64,18 +72,20 @@ const Loader = ({ onComplete }) => {
         }}
       />
 
-      {/* Video */}
+      {/* Transparent WebM — scrubbed to loading bar */}
       <video
         ref={videoRef}
-        src="/b_A_minimalist_line-ar.mp4"
-        autoPlay
+        src="/b_A_minimalist_line-ar-nobg.webm"
         muted
-        loop
         playsInline
+        preload="auto"
+        width={1280}
+        height={720}
         style={{
           width: 'min(60vw, 300px)',
           height: 'auto',
           objectFit: 'contain',
+          display: 'block',
         }}
       />
 

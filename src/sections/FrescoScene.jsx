@@ -310,20 +310,24 @@ const FrescoScene = () => {
           // The new text drifts fully down and out of view, staying fully visible
           .to(q('.one-legend'), { y: 620, duration: 1.4, ease: 'power1.in' }, 11.0);
 
-        // ---- Layered pull-back: wall + sky + frame + foreground (smooth dolly) ----
+        // ---- Continuous zoom-out: starts immediately after legend leaves at 11.0 ----
+        // Hidden until 11.2 via opacity:0, then appears instantly and zooms as one camera — no cross-fade
         if (reducedMotion) {
-          tl.set(q('.sky'), { scale: 0.58 }, 12.4)
-          tl.set(q('.wall'), { opacity: 1, scale: 1 }, 12.4)
-          tl.set(q('.frame-layer'), { opacity: 1, scale: 1 }, 12.4)
-          tl.set(q('.foreground'), { opacity: 1, y: 0 }, 12.4)
+          tl.set(q('.sky'), { scale: 0.58 }, 11.2)
+          tl.set(q('.wall'), { opacity: 1, scale: 1 }, 11.2)
+          tl.set(q('.frame-layer'), { opacity: 1, scale: 1 }, 11.2)
+          tl.set(q('.foreground'), { opacity: 1, y: 0 }, 11.2)
         } else {
-          // All three pull-back layers move together — this is what made the previous version smooth
-          tl.fromTo(q('.wall'), { opacity: 0, scale: 1.10 }, { opacity: 1, scale: 1, duration: 2.6, ease: 'power1.out' }, 12.4)
-          tl.to(q('.sky'), { scale: 0.58, duration: 2.6, ease: 'power2.inOut' }, 12.4)
-          tl.fromTo(q('.frame-layer'), { opacity: 0, scale: 1.18 }, { opacity: 1, scale: 1, duration: 2.6, ease: 'power2.inOut' }, 12.4)
-          tl.fromTo(q('.foreground'), { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 1.4, ease: 'power2.out' }, 13.0)
-          // Subtle settle so the wall breathes
-          tl.to(q('.wall'), { x: 6, duration: 2.6, ease: 'sine.inOut' }, 12.4)
+          // Make layers visible instantly at 11.2, then scale only — no opacity tween = no fade
+          tl.set(q('.wall'), { opacity: 1 }, 11.2)
+          tl.set(q('.frame-layer'), { opacity: 1 }, 11.2)
+          tl.set(q('.foreground'), { opacity: 1 }, 11.2)
+          // Wall + sky + frame zoom together as one dolly; frame starts larger so its aperture fits the sky
+          tl.fromTo(q('.wall'), { scale: 1.08 }, { scale: 1, duration: 2.8, ease: 'power1.out' }, 11.2)
+          tl.fromTo(q('.sky'), { scale: 1 }, { scale: 0.58, duration: 2.8, ease: 'power2.inOut' }, 11.2)
+          tl.fromTo(q('.frame-layer'), { scale: 1.35 }, { scale: 1, duration: 2.8, ease: 'power2.inOut' }, 11.2)
+          tl.fromTo(q('.foreground'), { y: 18 }, { y: 0, duration: 2.2, ease: 'power1.out' }, 11.6)
+          tl.to(q('.wall'), { x: 4, duration: 2.8, ease: 'sine.inOut' }, 11.2)
         }
       },
     },
