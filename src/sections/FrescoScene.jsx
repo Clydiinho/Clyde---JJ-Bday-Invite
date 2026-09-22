@@ -38,7 +38,7 @@ const styles = {
     position: 'absolute',
     inset: 0,
     opacity: 0,
-    backgroundImage: "url('/sky%20painting.png')",
+    backgroundImage: "url('/sky.webp')",
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
@@ -47,11 +47,11 @@ const styles = {
     boxShadow: '0 30px 90px rgba(0, 0, 0, 0.65)',
     willChange: 'transform, opacity',
   },
-  scene2: {
+  wall: {
     position: 'absolute',
     inset: -10,
     opacity: 0,
-    backgroundImage: "url('/scene2.jpg')",
+    backgroundImage: "url('/wall.webp')",
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
@@ -59,6 +59,32 @@ const styles = {
     transformOrigin: 'center',
     willChange: 'transform, opacity',
     zIndex: 0,
+  },
+  frameLayer: {
+    position: 'absolute',
+    inset: 0,
+    opacity: 0,
+    backgroundImage: "url('/frame.webp')",
+    backgroundSize: 'contain',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    pointerEvents: 'none',
+    transformOrigin: 'center',
+    willChange: 'transform, opacity',
+    zIndex: 2,
+  },
+  foreground: {
+    position: 'absolute',
+    inset: 0,
+    opacity: 0,
+    backgroundImage: "url('/father-son.webp')",
+    backgroundSize: 'cover',
+    backgroundPosition: 'left bottom',
+    backgroundRepeat: 'no-repeat',
+    pointerEvents: 'none',
+    transformOrigin: 'center',
+    willChange: 'transform, opacity',
+    zIndex: 3,
   },
   cloudBacking: {
     position: 'absolute',
@@ -201,7 +227,7 @@ const FrescoScene = () => {
     sceneRef,
     {
       scrollTrigger: {
-        end: '+=900%',
+        end: '+=880%',
       },
       build: (tl) => {
         const q = gsap.utils.selector(sceneRef)
@@ -284,22 +310,20 @@ const FrescoScene = () => {
           // The new text drifts fully down and out of view, staying fully visible
           .to(q('.one-legend'), { y: 620, duration: 1.4, ease: 'power1.in' }, 11.0);
 
-        // ---- scene2 — seamless zoom: interior blue fills the sky, then pulls back ----
+        // ---- Layered pull-back: wall + sky + frame + foreground (smooth dolly) ----
         if (reducedMotion) {
-          tl.set(q('.sky'), { opacity: 0 }, 12.4)
-          tl.set(q('.scene2'), { opacity: 1, scale: 1, y: '0%' }, 12.4)
+          tl.set(q('.sky'), { scale: 0.58 }, 12.4)
+          tl.set(q('.wall'), { opacity: 1, scale: 1 }, 12.4)
+          tl.set(q('.frame-layer'), { opacity: 1, scale: 1 }, 12.4)
+          tl.set(q('.foreground'), { opacity: 1, y: 0 }, 12.4)
         } else {
-          // Sky breathes into the match frame, then fades under the plate
-          tl.to(q('.sky'), { scale: 1.02, duration: 0.6, ease: 'sine.inOut' }, 12.4)
-          tl.to(q('.sky'), { opacity: 0, duration: 0.9, ease: 'power1.inOut' }, 12.4)
-          // scene2 starts zoomed to its interior blue (indistinguishable from sky),
-          // then effortless pull-back reveals gilt → plaster → father+baby
-          tl.fromTo(
-            q('.scene2'),
-            { opacity: 0, scale: 2.15, y: '-18%' },
-            { opacity: 1, scale: 1, y: '0%', duration: 5.0, ease: 'power2.out' },
-            12.4
-          )
+          // All three pull-back layers move together — this is what made the previous version smooth
+          tl.fromTo(q('.wall'), { opacity: 0, scale: 1.10 }, { opacity: 1, scale: 1, duration: 2.6, ease: 'power1.out' }, 12.4)
+          tl.to(q('.sky'), { scale: 0.58, duration: 2.6, ease: 'power2.inOut' }, 12.4)
+          tl.fromTo(q('.frame-layer'), { opacity: 0, scale: 1.18 }, { opacity: 1, scale: 1, duration: 2.6, ease: 'power2.inOut' }, 12.4)
+          tl.fromTo(q('.foreground'), { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 1.4, ease: 'power2.out' }, 13.0)
+          // Subtle settle so the wall breathes
+          tl.to(q('.wall'), { x: 6, duration: 2.6, ease: 'sine.inOut' }, 12.4)
         }
       },
     },
@@ -317,7 +341,7 @@ const FrescoScene = () => {
           className="background"
           style={{
             ...styles.layer,
-            backgroundImage: "url('/background.png')",
+            backgroundImage: "url('/background.webp')",
           }}
         />
 
@@ -398,11 +422,17 @@ const FrescoScene = () => {
           <p className="intro-line-2" style={{ ...styles.introLine, position: 'absolute' }}>There was a creation.</p>
         </div>
 
-        {/* scene2 — complete wall + framed painting (replaces gallery-wall + frame) */}
-        <div className="scene2" style={styles.scene2} />
+        {/* Wall — plaster behind the framed painting */}
+        <div className="wall" style={styles.wall} />
 
-        {/* Sky painting — fills the viewport after the transition */}
+        {/* Sky painting — live painting that settles inside the frame */}
         <div className="sky" style={styles.sky} />
+
+        {/* Frame — transparent centre, gilt over the sky */}
+        <div className="frame-layer" style={styles.frameLayer} />
+
+        {/* Foreground — father holding baby, bottom-left overlap */}
+        <div className="foreground" style={styles.foreground} />
 
         {/* Cloud backings — solid ovals that make the text truly hide behind the clouds */}
         <div className="cloud-backing" style={styles.cloudBacking} />
