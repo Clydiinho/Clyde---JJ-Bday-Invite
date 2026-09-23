@@ -115,6 +115,7 @@ const styles = {
     objectFit: 'cover',
     objectPosition: 'center',
     display: 'block',
+    willChange: 'transform',
   },
   // wall / frame / foreground removed — site ends after "One tiny legend"
   cloudBacking: {
@@ -371,31 +372,60 @@ const FrescoScene = () => {
           tl.to(q('.gallery-track'), { x: '-75%', duration: 1.0, ease: 'none' }, 37.6)
         }
 
-        // ---- Stage 5: Earth zoom — frame-by-frame scroll-driven (84 frames, 360×640) ----
+        // ---- Stage 5: Earth zoom — 540×960 WebP, decode-aware, holds on globe ----
         const FRAME_COUNT = 84
-        const frameSrc = (n) => `/location%20zoom/ezgif-frame-${String(n).padStart(3, '0')}.jpg`
-        // Preload in background — first 10 eagerly, rest idle
-        for (let i = 0; i < FRAME_COUNT; i++) {
+        const frameSrc = (n) => `/location%20zoom/ezgif-frame-${String(n).padStart(3, '0')}.webp`
+        const preloadFrame = (n) => {
           const img = new Image()
           img.decoding = 'async'
-          img.src = frameSrc(i + 1)
+          img.src = frameSrc(n)
+          return img
         }
+        // Eagerly decode first 15, idle the rest
+        for (let i = 1; i <= 15; i++) preloadFrame(i)
+        const idlePreload = () => {
+          for (let i = 16; i <= FRAME_COUNT; i++) {
+            const run = () => preloadFrame(i)
+            if ('requestIdleCallback' in window) window.requestIdleCallback(run)
+            else setTimeout(run, i * 30)
+          }
+        }
+        if ('requestIdleCallback' in window) window.requestIdleCallback(idlePreload)
+        else setTimeout(idlePreload, 800)
+
         const earthProxy = { frame: 0 }
         const updateEarthFrame = () => {
           const el = earthRef.current
           if (!el) return
           const idx = Math.min(FRAME_COUNT - 1, Math.max(0, Math.floor(earthProxy.frame)))
           const next = frameSrc(idx + 1)
-          if (el.getAttribute('src') !== next) el.src = next
+          if (el.dataset.frame === String(idx)) return
+          const img = new Image()
+          img.decoding = 'async'
+          img.src = next
+          img.decode()
+            .then(() => {
+              if (Math.floor(earthProxy.frame) !== idx) return
+              el.src = next
+              el.dataset.frame = String(idx)
+            })
+            .catch(() => {
+              el.src = next
+              el.dataset.frame = String(idx)
+            })
         }
         if (reducedMotion) {
           tl.set(q('.earth-zoom'), { opacity: 1 }, 38.6)
+          tl.set(q('.location'), { opacity: 0 }, 38.6)
           earthProxy.frame = FRAME_COUNT - 1
           updateEarthFrame()
         } else {
           tl.set(q('.earth-zoom'), { opacity: 1 }, 38.6)
+          tl.set(q('.location'), { opacity: 0 }, 38.6)
           tl.to(earthProxy, { frame: FRAME_COUNT - 1, duration: 14.4, ease: 'none', onUpdate: updateEarthFrame }, 38.6)
-          tl.to(q('.earth-zoom'), { opacity: 1, duration: 1.0, ease: 'none' }, 53.0)
+          // Hold indefinitely on final globe — no fade back to location
+          tl.set(q('.earth-zoom'), { opacity: 1 }, 53.0)
+          tl.set(q('.location'), { opacity: 0 }, 53.0)
         }
       },
     },
