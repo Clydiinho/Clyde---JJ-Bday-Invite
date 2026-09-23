@@ -101,6 +101,21 @@ const styles = {
     backgroundRepeat: 'no-repeat',
     willChange: 'transform',
   },
+  earthZoom: {
+    position: 'absolute',
+    inset: 0,
+    opacity: 0,
+    willChange: 'transform, opacity',
+    pointerEvents: 'none',
+    overflow: 'hidden',
+  },
+  earthFrame: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    objectPosition: 'center',
+    display: 'block',
+  },
   // wall / frame / foreground removed — site ends after "One tiny legend"
   cloudBacking: {
     position: 'absolute',
@@ -238,12 +253,13 @@ const styles = {
 
 const FrescoScene = () => {
   const sceneRef = useRef(null)
+  const earthRef = useRef(null)
 
   useScrollScene(
     sceneRef,
     {
       scrollTrigger: {
-        end: '+=1780%',
+        end: '+=2280%',
       },
       build: (tl) => {
         const q = gsap.utils.selector(sceneRef)
@@ -353,6 +369,33 @@ const FrescoScene = () => {
           tl.to(q('.gallery-track'), { x: '-50%', duration: 6.0, ease: 'power1.inOut' }, 25.6)
           tl.to(q('.gallery-track'), { x: '-75%', duration: 6.0, ease: 'power1.inOut' }, 31.6)
           tl.to(q('.gallery-track'), { x: '-75%', duration: 1.0, ease: 'none' }, 37.6)
+        }
+
+        // ---- Stage 5: Earth zoom — frame-by-frame scroll-driven (84 frames, 360×640) ----
+        const FRAME_COUNT = 84
+        const frameSrc = (n) => `/location%20zoom/ezgif-frame-${String(n).padStart(3, '0')}.jpg`
+        // Preload in background — first 10 eagerly, rest idle
+        for (let i = 0; i < FRAME_COUNT; i++) {
+          const img = new Image()
+          img.decoding = 'async'
+          img.src = frameSrc(i + 1)
+        }
+        const earthProxy = { frame: 0 }
+        const updateEarthFrame = () => {
+          const el = earthRef.current
+          if (!el) return
+          const idx = Math.min(FRAME_COUNT - 1, Math.max(0, Math.floor(earthProxy.frame)))
+          const next = frameSrc(idx + 1)
+          if (el.getAttribute('src') !== next) el.src = next
+        }
+        if (reducedMotion) {
+          tl.set(q('.earth-zoom'), { opacity: 1 }, 38.6)
+          earthProxy.frame = FRAME_COUNT - 1
+          updateEarthFrame()
+        } else {
+          tl.set(q('.earth-zoom'), { opacity: 1 }, 38.6)
+          tl.to(earthProxy, { frame: FRAME_COUNT - 1, duration: 14.4, ease: 'none', onUpdate: updateEarthFrame }, 38.6)
+          tl.to(q('.earth-zoom'), { opacity: 1, duration: 1.0, ease: 'none' }, 53.0)
         }
       },
     },
@@ -467,6 +510,16 @@ const FrescoScene = () => {
           </div>
           <div style={styles.galleryPanel}>
             <div className="location" style={styles.location} />
+            <div className="earth-zoom" style={styles.earthZoom}>
+              <img
+                ref={earthRef}
+                src="/location%20zoom/ezgif-frame-001.jpg"
+                alt=""
+                style={styles.earthFrame}
+                decoding="async"
+                loading="eager"
+              />
+            </div>
           </div>
         </div>
 
