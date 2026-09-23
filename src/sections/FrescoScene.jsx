@@ -60,6 +60,29 @@ const styles = {
     willChange: 'transform, opacity',
     zIndex: 4,
   },
+  galleryTrack: {
+    position: 'absolute',
+    inset: 0,
+    display: 'flex',
+    width: '200%',
+    height: '100%',
+    willChange: 'transform',
+  },
+  galleryPanel: {
+    flex: '0 0 50%',
+    position: 'relative',
+    height: '100%',
+    overflow: 'hidden',
+  },
+  invited: {
+    position: 'absolute',
+    inset: 0,
+    backgroundImage: "url('/invited.webp')",
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    willChange: 'transform',
+  },
   // wall / frame / foreground removed — site ends after "One tiny legend"
   cloudBacking: {
     position: 'absolute',
@@ -202,7 +225,7 @@ const FrescoScene = () => {
     sceneRef,
     {
       scrollTrigger: {
-        end: '+=880%',
+        end: '+=1220%',
       },
       build: (tl) => {
         const q = gsap.utils.selector(sceneRef)
@@ -285,10 +308,7 @@ const FrescoScene = () => {
           // The new text drifts fully down and out of view — end of experience
           .to(q('.one-legend'), { y: 620, duration: 1.4, ease: 'power1.in' }, 11.0);
 
-        // ---- scene2 handoff — sky painting becomes the painting on the wall ----
-        // Visually verified: at 12.4 sky is full-bleed cover center.
-        // scene2 starts zoomed so its blue interior coincides with sky's box.
-        // Responsive tweak: narrower viewports need slightly more scale to keep the gilt lip hidden.
+        // ---- Stage 1: scene2 handoff — sky becomes the painting on the wall (frozen) ----
         const vw = window.innerWidth
         const isNarrow = vw <= 360
         const isWide = vw >= 412
@@ -297,12 +317,22 @@ const FrescoScene = () => {
 
         if (reducedMotion) {
           tl.set(q('.sky'), { opacity: 0 }, 12.4)
+          tl.set(q('.gallery-track'), { x: '0%' }, 12.4)
           tl.set(q('.scene2'), { opacity: 1, scale: 1, y: '0%' }, 12.4)
         } else {
+          tl.set(q('.gallery-track'), { x: '0%' }, 12.4)
           tl.set(q('.scene2'), { opacity: 1 }, 12.4)
           tl.fromTo(q('.scene2'), { scale: handoffScale, y: handoffY }, { scale: 1, y: '0%', duration: 5.2, ease: 'power2.out' }, 12.4)
           tl.to(q('.sky'), { opacity: 0, duration: 0.7, ease: 'power1.in' }, 12.4)
           tl.to(q('.scene2'), { scale: 1.02, duration: 1.0, ease: 'sine.inOut', yoyo: true, repeat: 1 }, 17.6)
+        }
+
+        // ---- Stage 2: seamless left-to-right gallery walk — scene2 → invited (edge-to-edge) ----
+        if (reducedMotion) {
+          tl.set(q('.gallery-track'), { x: '-50%' }, 19.6)
+        } else {
+          tl.fromTo(q('.gallery-track'), { x: '0%' }, { x: '-50%', duration: 6.0, ease: 'power1.inOut' }, 19.6)
+          tl.to(q('.gallery-track'), { x: '-50%', duration: 1.0, ease: 'none' }, 25.6)
         }
       },
     },
@@ -404,8 +434,15 @@ const FrescoScene = () => {
         {/* Sky painting — live painting */}
         <div className="sky" style={styles.sky} />
 
-        {/* scene2 — single finished composition, seamless handoff from sky */}
-        <div className="scene2" style={styles.scene2} />
+        {/* Gallery track — edge-to-edge scene2 → invited (continuous wall) */}
+        <div className="gallery-track" style={styles.galleryTrack}>
+          <div style={styles.galleryPanel}>
+            <div className="scene2" style={{ ...styles.scene2, inset: 0 }} />
+          </div>
+          <div style={styles.galleryPanel}>
+            <div className="invited" style={styles.invited} />
+          </div>
+        </div>
 
         {/* Cloud backings — solid ovals that make the text truly hide behind the clouds */}
         <div className="cloud-backing" style={styles.cloudBacking} />
