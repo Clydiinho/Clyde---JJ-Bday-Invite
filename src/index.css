@@ -138,3 +138,4 @@ html.is-pinned {
 @media (prefers-reduced-motion: reduce) {
   .gp, .glow, .ks-arrow svg { animation: none; }
 }
+

@@ -47,45 +47,20 @@ const styles = {
     boxShadow: '0 30px 90px rgba(0, 0, 0, 0.65)',
     willChange: 'transform, opacity',
   },
-  wall: {
+  scene2: {
     position: 'absolute',
     inset: -10,
     opacity: 0,
-    backgroundImage: "url('/wall.webp')",
+    backgroundImage: "url('/scene2.webp')",
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
     pointerEvents: 'none',
-    transformOrigin: 'center',
+    transformOrigin: '50% 42%',
     willChange: 'transform, opacity',
-    zIndex: 0,
+    zIndex: 4,
   },
-  frameLayer: {
-    position: 'absolute',
-    inset: 0,
-    opacity: 0,
-    backgroundImage: "url('/frame.webp')",
-    backgroundSize: 'contain',
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat',
-    pointerEvents: 'none',
-    transformOrigin: 'center',
-    willChange: 'transform, opacity',
-    zIndex: 2,
-  },
-  foreground: {
-    position: 'absolute',
-    inset: 0,
-    opacity: 0,
-    backgroundImage: "url('/father-son.webp')",
-    backgroundSize: 'cover',
-    backgroundPosition: 'left bottom',
-    backgroundRepeat: 'no-repeat',
-    pointerEvents: 'none',
-    transformOrigin: 'center',
-    willChange: 'transform, opacity',
-    zIndex: 3,
-  },
+  // wall / frame / foreground removed — site ends after "One tiny legend"
   cloudBacking: {
     position: 'absolute',
     left: '8%',
@@ -307,27 +282,27 @@ const FrescoScene = () => {
           .to(q('.cloud-backing'), { x: -560, duration: 1.3, ease: 'power1.in' }, 10.2)
           .to(q('.cloud2-backing'), { x: 560, duration: 1.3, ease: 'power1.in' }, 10.2)
 
-          // The new text drifts fully down and out of view, staying fully visible
+          // The new text drifts fully down and out of view — end of experience
           .to(q('.one-legend'), { y: 620, duration: 1.4, ease: 'power1.in' }, 11.0);
 
-        // ---- Continuous zoom-out: starts immediately after legend leaves at 11.0 ----
-        // Hidden until 11.2 via opacity:0, then appears instantly and zooms as one camera — no cross-fade
+        // ---- scene2 handoff — sky painting becomes the painting on the wall ----
+        // Visually verified: at 12.4 sky is full-bleed cover center.
+        // scene2 starts zoomed so its blue interior coincides with sky's box.
+        // Responsive tweak: narrower viewports need slightly more scale to keep the gilt lip hidden.
+        const vw = window.innerWidth
+        const isNarrow = vw <= 360
+        const isWide = vw >= 412
+        const handoffScale = isNarrow ? 2.42 : isWide ? 2.26 : 2.34
+        const handoffY = isNarrow ? '-7%' : isWide ? '-5%' : '-6%'
+
         if (reducedMotion) {
-          tl.set(q('.sky'), { scale: 0.58 }, 11.2)
-          tl.set(q('.wall'), { opacity: 1, scale: 1 }, 11.2)
-          tl.set(q('.frame-layer'), { opacity: 1, scale: 1 }, 11.2)
-          tl.set(q('.foreground'), { opacity: 1, y: 0 }, 11.2)
+          tl.set(q('.sky'), { opacity: 0 }, 12.4)
+          tl.set(q('.scene2'), { opacity: 1, scale: 1, y: '0%' }, 12.4)
         } else {
-          // Make layers visible instantly at 11.2, then scale only — no opacity tween = no fade
-          tl.set(q('.wall'), { opacity: 1 }, 11.2)
-          tl.set(q('.frame-layer'), { opacity: 1 }, 11.2)
-          tl.set(q('.foreground'), { opacity: 1 }, 11.2)
-          // Wall + sky + frame zoom together as one dolly; frame starts larger so its aperture fits the sky
-          tl.fromTo(q('.wall'), { scale: 1.08 }, { scale: 1, duration: 2.8, ease: 'power1.out' }, 11.2)
-          tl.fromTo(q('.sky'), { scale: 1 }, { scale: 0.58, duration: 2.8, ease: 'power2.inOut' }, 11.2)
-          tl.fromTo(q('.frame-layer'), { scale: 1.35 }, { scale: 1, duration: 2.8, ease: 'power2.inOut' }, 11.2)
-          tl.fromTo(q('.foreground'), { y: 18 }, { y: 0, duration: 2.2, ease: 'power1.out' }, 11.6)
-          tl.to(q('.wall'), { x: 4, duration: 2.8, ease: 'sine.inOut' }, 11.2)
+          tl.set(q('.scene2'), { opacity: 1 }, 12.4)
+          tl.fromTo(q('.scene2'), { scale: handoffScale, y: handoffY }, { scale: 1, y: '0%', duration: 5.2, ease: 'power2.out' }, 12.4)
+          tl.to(q('.sky'), { opacity: 0, duration: 0.7, ease: 'power1.in' }, 12.4)
+          tl.to(q('.scene2'), { scale: 1.02, duration: 1.0, ease: 'sine.inOut', yoyo: true, repeat: 1 }, 17.6)
         }
       },
     },
@@ -426,17 +401,11 @@ const FrescoScene = () => {
           <p className="intro-line-2" style={{ ...styles.introLine, position: 'absolute' }}>There was a creation.</p>
         </div>
 
-        {/* Wall — plaster behind the framed painting */}
-        <div className="wall" style={styles.wall} />
-
-        {/* Sky painting — live painting that settles inside the frame */}
+        {/* Sky painting — live painting */}
         <div className="sky" style={styles.sky} />
 
-        {/* Frame — transparent centre, gilt over the sky */}
-        <div className="frame-layer" style={styles.frameLayer} />
-
-        {/* Foreground — father holding baby, bottom-left overlap */}
-        <div className="foreground" style={styles.foreground} />
+        {/* scene2 — single finished composition, seamless handoff from sky */}
+        <div className="scene2" style={styles.scene2} />
 
         {/* Cloud backings — solid ovals that make the text truly hide behind the clouds */}
         <div className="cloud-backing" style={styles.cloudBacking} />
