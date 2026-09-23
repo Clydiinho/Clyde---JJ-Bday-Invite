@@ -51,7 +51,7 @@ const styles = {
     position: 'absolute',
     inset: -10,
     opacity: 0,
-    backgroundImage: "url('/scene2.webp')",
+    backgroundImage: "url('/scene2-01.webp')",
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
@@ -77,7 +77,7 @@ const styles = {
   invited: {
     position: 'absolute',
     inset: 0,
-    backgroundImage: "url('/invited.webp')",
+    backgroundImage: "url('/invited-02.webp')",
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
