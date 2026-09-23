@@ -64,12 +64,12 @@ const styles = {
     position: 'absolute',
     inset: 0,
     display: 'flex',
-    width: '300%',
+    width: '400%',
     height: '100%',
     willChange: 'transform',
   },
   galleryPanel: {
-    flex: '0 0 33.333%',
+    flex: '0 0 25%',
     position: 'relative',
     height: '100%',
     overflow: 'hidden',
@@ -87,6 +87,15 @@ const styles = {
     position: 'absolute',
     inset: 0,
     backgroundImage: "url('/date&time-03-1080-03-03.jpg')",
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    willChange: 'transform',
+  },
+  location: {
+    position: 'absolute',
+    inset: 0,
+    backgroundImage: "url('/location-04.webp')",
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
@@ -234,7 +243,7 @@ const FrescoScene = () => {
     sceneRef,
     {
       scrollTrigger: {
-        end: '+=1500%',
+        end: '+=1780%',
       },
       build: (tl) => {
         const q = gsap.utils.selector(sceneRef)
@@ -336,13 +345,14 @@ const FrescoScene = () => {
           tl.to(q('.scene2'), { scale: 1.02, duration: 1.0, ease: 'sine.inOut', yoyo: true, repeat: 1 }, 17.6)
         }
 
-        // ---- Stage 2+3: continuous walk — scene2 → invited → date&time (edge-to-edge, no pause) ----
+        // ---- Stage 2+3+4: continuous walk — scene2 → invited → date&time → location (edge-to-edge, no pause) ----
         if (reducedMotion) {
-          tl.set(q('.gallery-track'), { x: '-66.666%' }, 19.6)
+          tl.set(q('.gallery-track'), { x: '-75%' }, 19.6)
         } else {
-          tl.fromTo(q('.gallery-track'), { x: '0%' }, { x: '-33.333%', duration: 6.0, ease: 'power1.inOut' }, 19.6)
-          tl.to(q('.gallery-track'), { x: '-66.666%', duration: 6.0, ease: 'power1.inOut' }, 25.6)
-          tl.to(q('.gallery-track'), { x: '-66.666%', duration: 1.0, ease: 'none' }, 31.6)
+          tl.fromTo(q('.gallery-track'), { x: '0%' }, { x: '-25%', duration: 6.0, ease: 'power1.inOut' }, 19.6)
+          tl.to(q('.gallery-track'), { x: '-50%', duration: 6.0, ease: 'power1.inOut' }, 25.6)
+          tl.to(q('.gallery-track'), { x: '-75%', duration: 6.0, ease: 'power1.inOut' }, 31.6)
+          tl.to(q('.gallery-track'), { x: '-75%', duration: 1.0, ease: 'none' }, 37.6)
         }
       },
     },
@@ -444,7 +454,7 @@ const FrescoScene = () => {
         {/* Sky painting — live painting */}
         <div className="sky" style={styles.sky} />
 
-        {/* Gallery track — edge-to-edge scene2 → invited → date&time (continuous wall) */}
+        {/* Gallery track — edge-to-edge scene2 → invited → date&time → location (continuous wall) */}
         <div className="gallery-track" style={styles.galleryTrack}>
           <div style={styles.galleryPanel}>
             <div className="scene2" style={{ ...styles.scene2, inset: 0 }} />
@@ -454,6 +464,9 @@ const FrescoScene = () => {
           </div>
           <div style={styles.galleryPanel}>
             <div className="date-time" style={styles.dateTime} />
+          </div>
+          <div style={styles.galleryPanel}>
+            <div className="location" style={styles.location} />
           </div>
         </div>
 
