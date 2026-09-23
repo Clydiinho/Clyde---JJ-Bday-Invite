@@ -86,7 +86,7 @@ const styles = {
   dateTime: {
     position: 'absolute',
     inset: 0,
-    backgroundImage: "url('/date&time-03.webp')",
+    backgroundImage: "url('/date&time-03-1080-03-03.jpg')",
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
