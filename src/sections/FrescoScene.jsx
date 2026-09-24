@@ -428,15 +428,15 @@ const FrescoScene = () => {
           tl.set(q('.location'), { opacity: 0 }, 38.6)
           earthProxy.frame = FRAME_COUNT - 1
           updateEarthFrame()
-          tl.set(q('.earth-zoom-2'), { opacity: 1 }, 53.0)
-          tl.set(q('.earth-zoom'), { opacity: 0 }, 53.0)
+          tl.set(q('.earth-zoom-2'), { opacity: 1 }, 45.8)
+          tl.set(q('.earth-zoom'), { opacity: 0 }, 45.8)
         } else {
           tl.set(q('.earth-zoom'), { opacity: 1 }, 38.6)
           tl.set(q('.location'), { opacity: 0 }, 38.6)
-          tl.to(earthProxy, { frame: FRAME_COUNT - 1, duration: 14.4, ease: 'none', onUpdate: updateEarthFrame }, 38.6)
+          tl.to(earthProxy, { frame: FRAME_COUNT - 1, duration: 7.2, ease: 'none', onUpdate: updateEarthFrame }, 38.6)
           // Hold on final globe until Stage 6 — no fade back to location
-          tl.set(q('.earth-zoom'), { opacity: 1 }, 53.0)
-          tl.set(q('.location'), { opacity: 0 }, 53.0)
+          tl.set(q('.earth-zoom'), { opacity: 1 }, 45.8)
+          tl.set(q('.location'), { opacity: 0 }, 45.8)
         }
 
         // ---- Stage 6: location spin/zoom — 70 frames, 1080×1920 WebP, seamless from Earth globe ----
@@ -482,16 +482,16 @@ const FrescoScene = () => {
             })
         }
         if (reducedMotion) {
-          tl.set(q('.earth-zoom-2'), { opacity: 1 }, 53.0)
+          tl.set(q('.earth-zoom-2'), { opacity: 1 }, 45.8)
           earthProxy2.frame = FRAME_COUNT_6 - 1
           updateEarthFrame2()
         } else {
-          // Seamless handoff: 53.0 final Stage 5 globe remains, Stage 6 starts with identical globe
-          tl.set(q('.earth-zoom-2'), { opacity: 1 }, 53.0)
-          tl.set(q('.earth-zoom'), { opacity: 1 }, 53.0)
-          tl.to(q('.earth-zoom'), { opacity: 0, duration: 0.6, ease: 'power1.in' }, 53.0)
-          tl.to(earthProxy2, { frame: FRAME_COUNT_6 - 1, duration: 14.0, ease: 'none', onUpdate: updateEarthFrame2 }, 53.6)
-          tl.set(q('.earth-zoom-2'), { opacity: 1 }, 67.6)
+          // Seamless handoff: 45.8 final Stage 5 globe remains, Stage 6 starts with identical globe
+          tl.set(q('.earth-zoom-2'), { opacity: 1 }, 45.8)
+          tl.set(q('.earth-zoom'), { opacity: 1 }, 45.8)
+          tl.to(q('.earth-zoom'), { opacity: 0, duration: 0.6, ease: 'power1.in' }, 45.8)
+          tl.to(earthProxy2, { frame: FRAME_COUNT_6 - 1, duration: 14.0, ease: 'none', onUpdate: updateEarthFrame2 }, 46.4)
+          tl.set(q('.earth-zoom-2'), { opacity: 1 }, 60.4)
         }
       },
     },
