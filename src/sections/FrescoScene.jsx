@@ -117,6 +117,14 @@ const styles = {
     pointerEvents: 'none',
     overflow: 'hidden',
   },
+  earthZoom3: {
+    position: 'absolute',
+    inset: 0,
+    opacity: 0,
+    willChange: 'transform, opacity',
+    pointerEvents: 'none',
+    overflow: 'hidden',
+  },
   earthFrame: {
     width: '100%',
     height: '100%',
@@ -264,12 +272,13 @@ const FrescoScene = () => {
   const sceneRef = useRef(null)
   const earthRef = useRef(null)
   const earthRef2 = useRef(null)
+  const earthRef3 = useRef(null)
 
   useScrollScene(
     sceneRef,
     {
       scrollTrigger: {
-        end: '+=2780%',
+        end: '+=3267.9%',
       },
       build: (tl) => {
         const q = gsap.utils.selector(sceneRef)
@@ -493,6 +502,62 @@ const FrescoScene = () => {
           tl.to(earthProxy2, { frame: FRAME_COUNT_6 - 1, duration: 14.0, ease: 'none', onUpdate: updateEarthFrame2 }, 46.4)
           tl.set(q('.earth-zoom-2'), { opacity: 1 }, 60.4)
         }
+
+        // ---- Stage 7: activities — 71 frames, 720×1280 WebP, seamless from Stage 6 final frame ----
+        const FRAME_COUNT_7 = 71
+        const frameSrc7 = (n) => `/activities/ezgif-frame-${String(n).padStart(3, '0')}.webp`
+        const preloadFrame7 = (n) => {
+          const img = new Image()
+          img.decoding = 'async'
+          img.src = frameSrc7(n)
+          return img
+        }
+        for (let i = 1; i <= 15; i++) preloadFrame7(i)
+        const idlePreload7 = () => {
+          for (let i = 16; i <= FRAME_COUNT_7; i++) {
+            const run = () => preloadFrame7(i)
+            if ('requestIdleCallback' in window) window.requestIdleCallback(run)
+            else setTimeout(run, i * 30)
+          }
+        }
+        if ('requestIdleCallback' in window) window.requestIdleCallback(idlePreload7)
+        else setTimeout(idlePreload7, 1800)
+
+        const actProxy = { frame: 0 }
+        const updateActFrame = () => {
+          const el = earthRef3.current
+          if (!el) return
+          const idx = Math.min(FRAME_COUNT_7 - 1, Math.max(0, Math.floor(actProxy.frame)))
+          const next = frameSrc7(idx + 1)
+          if (el.dataset.frame === String(idx)) return
+          const img = new Image()
+          img.decoding = 'async'
+          img.src = next
+          img
+            .decode()
+            .then(() => {
+              if (Math.floor(actProxy.frame) !== idx) return
+              el.src = next
+              el.dataset.frame = String(idx)
+            })
+            .catch(() => {
+              el.src = next
+              el.dataset.frame = String(idx)
+            })
+        }
+        if (reducedMotion) {
+          tl.set(q('.earth-zoom-3'), { opacity: 1 }, 45.8)
+          tl.set(q('.earth-zoom-2'), { opacity: 0 }, 45.8)
+          actProxy.frame = FRAME_COUNT_7 - 1
+          updateActFrame()
+        } else {
+          // Seamless handoff: 60.4 final Stage 6 frame remains, Stage 7 starts with identical frame
+          tl.set(q('.earth-zoom-3'), { opacity: 1 }, 60.4)
+          tl.set(q('.earth-zoom-2'), { opacity: 1 }, 60.4)
+          tl.to(q('.earth-zoom-2'), { opacity: 0, duration: 0.6, ease: 'power1.in' }, 60.4)
+          tl.to(actProxy, { frame: FRAME_COUNT_7 - 1, duration: 10, ease: 'none', onUpdate: updateActFrame }, 61.0)
+          tl.set(q('.earth-zoom-3'), { opacity: 1 }, 71.0)
+        }
       },
     },
     []
@@ -620,6 +685,16 @@ const FrescoScene = () => {
               <img
                 ref={earthRef2}
                 src="/location/ezgif-frame-001.webp"
+                alt=""
+                style={styles.earthFrame}
+                decoding="async"
+                loading="eager"
+              />
+            </div>
+            <div className="earth-zoom-3" style={styles.earthZoom3}>
+              <img
+                ref={earthRef3}
+                src="/activities/ezgif-frame-001.webp"
                 alt=""
                 style={styles.earthFrame}
                 decoding="async"
