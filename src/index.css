@@ -63,10 +63,6 @@ html.is-pinned {
   overflow: clip;
 }
 
-.gallery-track {
-  will-change: transform;
-}
-
 /* Mobile-only invitation: on larger screens the site renders as a centered phone frame */
 @media (min-width: 480px) {
   body {
@@ -102,18 +98,12 @@ html.is-pinned {
 
   .glow {
     will-change: transform, opacity;
-    animation: glowBreathe 3s ease-in-out infinite;
   }
 }
 
 @keyframes sparkle {
   0%, 100% { opacity: 0.35; transform: translateX(-50%) scale(0.92); }
   50%      { opacity: 1;   transform: translateX(-50%) scale(1.06); }
-}
-
-@keyframes glowBreathe {
-  0%, 100% { filter: blur(4px); }
-  50%      { filter: blur(6px); }
 }
 
 /* Keep-scrolling ring rotation */

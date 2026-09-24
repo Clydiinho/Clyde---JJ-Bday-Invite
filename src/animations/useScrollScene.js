@@ -31,18 +31,30 @@ export const useScrollScene = (ref, config, deps = []) => {
       config?.build(tl.current)
     }, ref)
 
-    let raf = 0
-    const scheduleRefresh = () => {
-      cancelAnimationFrame(raf)
-      raf = requestAnimationFrame(() => ScrollTrigger.refresh())
+    // Debounced, scroll-aware refresh: never re-measure the pin while the
+    // user is actively scrubbing (toolbar show/hide fires visualViewport
+    // resize mid-scroll — an immediate refresh() there causes a jump).
+    let refreshTimer = 0
+    let lastScrollAt = 0
+    const markScroll = () => { lastScrollAt = Date.now() }
+    const scheduleRefresh = (delay) => {
+      clearTimeout(refreshTimer)
+      refreshTimer = setTimeout(() => {
+        if (Date.now() - lastScrollAt < 500) { scheduleRefresh(delay); return; }
+        ScrollTrigger.refresh()
+      }, delay)
     }
-    window.addEventListener('resize', scheduleRefresh)
-    window.visualViewport?.addEventListener('resize', scheduleRefresh)
+    const onResize = () => scheduleRefresh(300)
+    const onViewportResize = () => scheduleRefresh(600)
+    window.addEventListener('scroll', markScroll, { passive: true })
+    window.addEventListener('resize', onResize)
+    window.visualViewport?.addEventListener('resize', onViewportResize)
 
     return () => {
-      cancelAnimationFrame(raf)
-      window.removeEventListener('resize', scheduleRefresh)
-      window.visualViewport?.removeEventListener('resize', scheduleRefresh)
+      clearTimeout(refreshTimer)
+      window.removeEventListener('scroll', markScroll)
+      window.removeEventListener('resize', onResize)
+      window.visualViewport?.removeEventListener('resize', onViewportResize)
       document.documentElement.classList.remove('is-pinned')
       ctx.revert()
     }

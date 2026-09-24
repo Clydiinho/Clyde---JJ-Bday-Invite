@@ -21,7 +21,6 @@ const styles = {
     inset: 0,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
-    willChange: 'transform',
   },
   clouds: {
     position: 'absolute',
@@ -44,8 +43,6 @@ const styles = {
     backgroundRepeat: 'no-repeat',
     pointerEvents: 'none',
     transformOrigin: 'center',
-    boxShadow: '0 30px 90px rgba(0, 0, 0, 0.65)',
-    willChange: 'transform, opacity',
   },
   scene2: {
     position: 'absolute',
@@ -57,7 +54,6 @@ const styles = {
     backgroundRepeat: 'no-repeat',
     pointerEvents: 'none',
     transformOrigin: '50% 42%',
-    willChange: 'transform, opacity',
     zIndex: 4,
   },
   galleryTrack: {
@@ -66,7 +62,6 @@ const styles = {
     display: 'flex',
     width: '400%',
     height: '100%',
-    willChange: 'transform',
   },
   galleryPanel: {
     flex: '0 0 25%',
@@ -81,7 +76,6 @@ const styles = {
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
-    willChange: 'transform',
   },
   dateTime: {
     position: 'absolute',
@@ -90,7 +84,6 @@ const styles = {
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
-    willChange: 'transform',
   },
   location: {
     position: 'absolute',
@@ -99,13 +92,11 @@ const styles = {
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
-    willChange: 'transform',
   },
   earthZoom: {
     position: 'absolute',
     inset: 0,
     opacity: 0,
-    willChange: 'transform, opacity',
     pointerEvents: 'none',
     overflow: 'hidden',
   },
@@ -113,7 +104,6 @@ const styles = {
     position: 'absolute',
     inset: 0,
     opacity: 0,
-    willChange: 'transform, opacity',
     pointerEvents: 'none',
     overflow: 'hidden',
   },
@@ -121,7 +111,6 @@ const styles = {
     position: 'absolute',
     inset: 0,
     opacity: 0,
-    willChange: 'transform, opacity',
     pointerEvents: 'none',
     overflow: 'hidden',
   },
@@ -131,7 +120,6 @@ const styles = {
     objectFit: 'cover',
     objectPosition: 'center',
     display: 'block',
-    willChange: 'transform',
   },
   // wall / frame / foreground removed — site ends after "One tiny legend"
   cloudBacking: {
@@ -140,11 +128,10 @@ const styles = {
     right: '8%',
     top: '31%',
     height: '18%',
-    background: 'rgba(255,255,255,0.96)',
-    borderRadius: '999px',
-    filter: 'blur(18px)',
+    backgroundImage: "url('/cloud-backing.webp')",
+    backgroundSize: '100% 100%',
+    backgroundRepeat: 'no-repeat',
     opacity: 0,
-    willChange: 'transform, opacity',
     zIndex: 2.1,
   },
   cloud2Backing: {
@@ -153,11 +140,10 @@ const styles = {
     right: '12%',
     top: '38%',
     height: '15%',
-    background: 'rgba(255,255,255,0.92)',
-    borderRadius: '999px',
-    filter: 'blur(16px)',
+    backgroundImage: "url('/cloud-backing-2.webp')",
+    backgroundSize: '100% 100%',
+    backgroundRepeat: 'no-repeat',
     opacity: 0,
-    willChange: 'transform, opacity',
     zIndex: 1.9,
   },
   cloud: {
@@ -168,13 +154,11 @@ const styles = {
     top: '18%',
     width: 'min(86%, 60vh)',
     aspectRatio: '1 / 1',
-    backgroundImage: "url('/white%20cloud.png')",
+    backgroundImage: "url('/cloud-shadow.webp')",
     backgroundSize: 'contain',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
     opacity: 0,
-    filter: 'drop-shadow(0 18px 28px rgba(80, 95, 120, 0.35))',
-    willChange: 'transform, opacity',
     zIndex: 3,
   },
   cloud2: {
@@ -185,13 +169,11 @@ const styles = {
     top: '26%',
     width: 'min(72%, 50vh)',
     aspectRatio: '1 / 1',
-    backgroundImage: "url('/white%20cloud.png')",
+    backgroundImage: "url('/cloud-shadow.webp')",
     backgroundSize: 'contain',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
     opacity: 0,
-    filter: 'drop-shadow(0 14px 22px rgba(80, 95, 120, 0.25))',
-    willChange: 'transform, opacity',
     zIndex: 2,
     transform: 'scaleX(-1)',
   },
@@ -211,7 +193,6 @@ const styles = {
     letterSpacing: '0.02em',
     textShadow: '0 3px 22px rgba(60, 70, 95, 0.55), 0 1px 2px rgba(60,70,95,0.4)',
     opacity: 0,
-    willChange: 'transform, opacity',
     zIndex: 1,
   },
   oneLegend: {
@@ -230,7 +211,6 @@ const styles = {
     letterSpacing: '0.02em',
     textShadow: '0 3px 22px rgba(60, 70, 95, 0.55), 0 1px 2px rgba(60,70,95,0.4)',
     opacity: 0,
-    willChange: 'transform, opacity',
     zIndex: 1,
   },
   scrollHint: {
@@ -264,7 +244,6 @@ const styles = {
     textShadow: '0 2px 24px rgba(0,0,0,0.55), 0 0 1px rgba(0,0,0,0.4)',
     margin: 0,
     opacity: 0,
-    willChange: 'transform, opacity',
   },
 }
 
@@ -283,6 +262,22 @@ const FrescoScene = () => {
       build: (tl) => {
         const q = gsap.utils.selector(sceneRef)
         const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+        // will-change scoping: arm compositing layers only around each
+        // layer's active window instead of holding ~19 permanent layers.
+        tl.set(q('.cloud-backing, .cloud2-backing, .cloud, .cloud2, .one-dad, .one-legend, .intro-line-1, .intro-line-2'), { willChange: 'transform, opacity' }, 0)
+        tl.set(q('.cloud-backing, .cloud2-backing, .cloud, .cloud2, .one-dad, .one-legend, .intro-line-1, .intro-line-2'), { willChange: 'auto' }, 13.0)
+        tl.set(q('.sky'), { willChange: 'transform, opacity' }, 5.0)
+        tl.set(q('.sky'), { willChange: 'auto' }, 13.4)
+        tl.set(q('.scene2'), { willChange: 'transform, opacity' }, 11.9)
+        tl.set(q('.scene2'), { willChange: 'auto' }, 19.6)
+        tl.set(q('.gallery-track'), { willChange: 'transform' }, 19.0)
+        tl.set(q('.gallery-track'), { willChange: 'auto' }, 38.6)
+        tl.set(q('.earth-zoom'), { willChange: 'transform, opacity' }, 38.0)
+        tl.set(q('.earth-zoom'), { willChange: 'auto' }, 46.4)
+        tl.set(q('.earth-zoom-2'), { willChange: 'transform, opacity' }, 45.2)
+        tl.set(q('.earth-zoom-2'), { willChange: 'auto' }, 61.0)
+        tl.set(q('.earth-zoom-3'), { willChange: 'transform, opacity' }, 59.8)
 
         // Opening: only background visible, figures hidden & pushed off-screen
         tl.set(q('.father'), { opacity: 0, x: -250 })
@@ -412,12 +407,12 @@ const FrescoScene = () => {
         else setTimeout(idlePreload, 800)
 
         const earthProxy = { frame: 0 }
-        const updateEarthFrame = () => {
+        let earthPending = -1
+        let earthScheduled = false
+        const commitEarthFrame = (idx) => {
           const el = earthRef.current
           if (!el) return
-          const idx = Math.min(FRAME_COUNT - 1, Math.max(0, Math.floor(earthProxy.frame)))
           const next = frameSrc(idx + 1)
-          if (el.dataset.frame === String(idx)) return
           const img = new Image()
           img.decoding = 'async'
           img.src = next
@@ -432,11 +427,24 @@ const FrescoScene = () => {
               el.dataset.frame = String(idx)
             })
         }
+        const updateEarthFrame = () => {
+          const el = earthRef.current
+          if (!el) return
+          const idx = Math.min(FRAME_COUNT - 1, Math.max(0, Math.floor(earthProxy.frame)))
+          if (el.dataset.frame === String(idx)) return
+          earthPending = idx
+          if (earthScheduled) return
+          earthScheduled = true
+          requestAnimationFrame(() => {
+            earthScheduled = false
+            commitEarthFrame(earthPending)
+          })
+        }
         if (reducedMotion) {
           tl.set(q('.earth-zoom'), { opacity: 1 }, 38.6)
           tl.set(q('.location'), { opacity: 0 }, 38.6)
           earthProxy.frame = FRAME_COUNT - 1
-          updateEarthFrame()
+          commitEarthFrame(FRAME_COUNT - 1)
           tl.set(q('.earth-zoom-2'), { opacity: 1 }, 45.8)
           tl.set(q('.earth-zoom'), { opacity: 0 }, 45.8)
         } else {
@@ -469,12 +477,12 @@ const FrescoScene = () => {
         else setTimeout(idlePreload6, 1200)
 
         const earthProxy2 = { frame: 0 }
-        const updateEarthFrame2 = () => {
+        let earth2Pending = -1
+        let earth2Scheduled = false
+        const commitEarthFrame2 = (idx) => {
           const el = earthRef2.current
           if (!el) return
-          const idx = Math.min(FRAME_COUNT_6 - 1, Math.max(0, Math.floor(earthProxy2.frame)))
           const next = frameSrc6(idx + 1)
-          if (el.dataset.frame === String(idx)) return
           const img = new Image()
           img.decoding = 'async'
           img.src = next
@@ -490,10 +498,23 @@ const FrescoScene = () => {
               el.dataset.frame = String(idx)
             })
         }
+        const updateEarthFrame2 = () => {
+          const el = earthRef2.current
+          if (!el) return
+          const idx = Math.min(FRAME_COUNT_6 - 1, Math.max(0, Math.floor(earthProxy2.frame)))
+          if (el.dataset.frame === String(idx)) return
+          earth2Pending = idx
+          if (earth2Scheduled) return
+          earth2Scheduled = true
+          requestAnimationFrame(() => {
+            earth2Scheduled = false
+            commitEarthFrame2(earth2Pending)
+          })
+        }
         if (reducedMotion) {
           tl.set(q('.earth-zoom-2'), { opacity: 1 }, 45.8)
           earthProxy2.frame = FRAME_COUNT_6 - 1
-          updateEarthFrame2()
+          commitEarthFrame2(FRAME_COUNT_6 - 1)
         } else {
           // Seamless handoff: 45.8 final Stage 5 globe remains, Stage 6 starts with identical globe
           tl.set(q('.earth-zoom-2'), { opacity: 1 }, 45.8)
@@ -524,12 +545,12 @@ const FrescoScene = () => {
         else setTimeout(idlePreload7, 1800)
 
         const actProxy = { frame: 0 }
-        const updateActFrame = () => {
+        let actPending = -1
+        let actScheduled = false
+        const commitActFrame = (idx) => {
           const el = earthRef3.current
           if (!el) return
-          const idx = Math.min(FRAME_COUNT_7 - 1, Math.max(0, Math.floor(actProxy.frame)))
           const next = frameSrc7(idx + 1)
-          if (el.dataset.frame === String(idx)) return
           const img = new Image()
           img.decoding = 'async'
           img.src = next
@@ -545,11 +566,24 @@ const FrescoScene = () => {
               el.dataset.frame = String(idx)
             })
         }
+        const updateActFrame = () => {
+          const el = earthRef3.current
+          if (!el) return
+          const idx = Math.min(FRAME_COUNT_7 - 1, Math.max(0, Math.floor(actProxy.frame)))
+          if (el.dataset.frame === String(idx)) return
+          actPending = idx
+          if (actScheduled) return
+          actScheduled = true
+          requestAnimationFrame(() => {
+            actScheduled = false
+            commitActFrame(actPending)
+          })
+        }
         if (reducedMotion) {
           tl.set(q('.earth-zoom-3'), { opacity: 1 }, 45.8)
           tl.set(q('.earth-zoom-2'), { opacity: 0 }, 45.8)
           actProxy.frame = FRAME_COUNT_7 - 1
-          updateActFrame()
+          commitActFrame(FRAME_COUNT_7 - 1)
         } else {
           // Seamless handoff: 60.4 final Stage 6 frame remains, Stage 7 starts with identical frame
           tl.set(q('.earth-zoom-3'), { opacity: 1 }, 60.4)
@@ -623,8 +657,9 @@ const FrescoScene = () => {
             borderRadius: '50%',
             opacity: 0,
             pointerEvents: 'none',
-            background: 'radial-gradient(circle, rgba(255,215,120,0.85) 0%, rgba(255,200,90,0.45) 35%, rgba(255,190,80,0.15) 60%, transparent 78%)',
-            filter: 'blur(4px)',
+            backgroundImage: "url('/glow.webp')",
+            backgroundSize: 'cover',
+            backgroundRepeat: 'no-repeat',
           }}
         />
 
@@ -645,7 +680,6 @@ const FrescoScene = () => {
             opacity: 0,
             pointerEvents: 'none',
             background: 'radial-gradient(circle at 50% 47%, rgba(255,225,140,0.9) 0%, rgba(255,200,100,0.5) 34%, rgba(255,180,70,0.18) 58%, transparent 80%)',
-            mixBlendMode: 'screen',
           }}
         />
 

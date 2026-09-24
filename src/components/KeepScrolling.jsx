@@ -82,10 +82,8 @@ const KeepScrolling = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: 'rgba(255,255,255,0.08)',
+          backgroundColor: 'rgba(24,19,14,0.55)',
           boxShadow: '0 0 0 1px rgba(255,235,210,0.3), inset 0 1px 0 rgba(255,255,255,0.12)',
-          backdropFilter: 'blur(6px)',
-          WebkitBackdropFilter: 'blur(6px)',
         }}
       >
         <svg
