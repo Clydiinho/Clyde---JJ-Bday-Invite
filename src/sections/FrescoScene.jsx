@@ -109,6 +109,14 @@ const styles = {
     pointerEvents: 'none',
     overflow: 'hidden',
   },
+  earthZoom2: {
+    position: 'absolute',
+    inset: 0,
+    opacity: 0,
+    willChange: 'transform, opacity',
+    pointerEvents: 'none',
+    overflow: 'hidden',
+  },
   earthFrame: {
     width: '100%',
     height: '100%',
@@ -255,12 +263,13 @@ const styles = {
 const FrescoScene = () => {
   const sceneRef = useRef(null)
   const earthRef = useRef(null)
+  const earthRef2 = useRef(null)
 
   useScrollScene(
     sceneRef,
     {
       scrollTrigger: {
-        end: '+=2280%',
+        end: '+=2780%',
       },
       build: (tl) => {
         const q = gsap.utils.selector(sceneRef)
@@ -419,13 +428,70 @@ const FrescoScene = () => {
           tl.set(q('.location'), { opacity: 0 }, 38.6)
           earthProxy.frame = FRAME_COUNT - 1
           updateEarthFrame()
+          tl.set(q('.earth-zoom-2'), { opacity: 1 }, 53.0)
+          tl.set(q('.earth-zoom'), { opacity: 0 }, 53.0)
         } else {
           tl.set(q('.earth-zoom'), { opacity: 1 }, 38.6)
           tl.set(q('.location'), { opacity: 0 }, 38.6)
           tl.to(earthProxy, { frame: FRAME_COUNT - 1, duration: 14.4, ease: 'none', onUpdate: updateEarthFrame }, 38.6)
-          // Hold indefinitely on final globe — no fade back to location
+          // Hold on final globe until Stage 6 — no fade back to location
           tl.set(q('.earth-zoom'), { opacity: 1 }, 53.0)
           tl.set(q('.location'), { opacity: 0 }, 53.0)
+        }
+
+        // ---- Stage 6: location spin/zoom — 70 frames, 1080×1920 WebP, seamless from Earth globe ----
+        const FRAME_COUNT_6 = 70
+        const frameSrc6 = (n) => `/location/ezgif-frame-${String(n).padStart(3, '0')}.webp`
+        const preloadFrame6 = (n) => {
+          const img = new Image()
+          img.decoding = 'async'
+          img.src = frameSrc6(n)
+          return img
+        }
+        for (let i = 1; i <= 15; i++) preloadFrame6(i)
+        const idlePreload6 = () => {
+          for (let i = 16; i <= FRAME_COUNT_6; i++) {
+            const run = () => preloadFrame6(i)
+            if ('requestIdleCallback' in window) window.requestIdleCallback(run)
+            else setTimeout(run, i * 30)
+          }
+        }
+        if ('requestIdleCallback' in window) window.requestIdleCallback(idlePreload6)
+        else setTimeout(idlePreload6, 1200)
+
+        const earthProxy2 = { frame: 0 }
+        const updateEarthFrame2 = () => {
+          const el = earthRef2.current
+          if (!el) return
+          const idx = Math.min(FRAME_COUNT_6 - 1, Math.max(0, Math.floor(earthProxy2.frame)))
+          const next = frameSrc6(idx + 1)
+          if (el.dataset.frame === String(idx)) return
+          const img = new Image()
+          img.decoding = 'async'
+          img.src = next
+          img
+            .decode()
+            .then(() => {
+              if (Math.floor(earthProxy2.frame) !== idx) return
+              el.src = next
+              el.dataset.frame = String(idx)
+            })
+            .catch(() => {
+              el.src = next
+              el.dataset.frame = String(idx)
+            })
+        }
+        if (reducedMotion) {
+          tl.set(q('.earth-zoom-2'), { opacity: 1 }, 53.0)
+          earthProxy2.frame = FRAME_COUNT_6 - 1
+          updateEarthFrame2()
+        } else {
+          // Seamless handoff: 53.0 final Stage 5 globe remains, Stage 6 starts with identical globe
+          tl.set(q('.earth-zoom-2'), { opacity: 1 }, 53.0)
+          tl.set(q('.earth-zoom'), { opacity: 1 }, 53.0)
+          tl.to(q('.earth-zoom'), { opacity: 0, duration: 0.6, ease: 'power1.in' }, 53.0)
+          tl.to(earthProxy2, { frame: FRAME_COUNT_6 - 1, duration: 14.0, ease: 'none', onUpdate: updateEarthFrame2 }, 53.6)
+          tl.set(q('.earth-zoom-2'), { opacity: 1 }, 67.6)
         }
       },
     },
@@ -543,7 +609,17 @@ const FrescoScene = () => {
             <div className="earth-zoom" style={styles.earthZoom}>
               <img
                 ref={earthRef}
-                src="/location%20zoom/ezgif-frame-001.jpg"
+                src="/location%20zoom/ezgif-frame-001.webp"
+                alt=""
+                style={styles.earthFrame}
+                decoding="async"
+                loading="eager"
+              />
+            </div>
+            <div className="earth-zoom-2" style={styles.earthZoom2}>
+              <img
+                ref={earthRef2}
+                src="/location/ezgif-frame-001.webp"
                 alt=""
                 style={styles.earthFrame}
                 decoding="async"
